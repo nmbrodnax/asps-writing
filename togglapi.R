@@ -15,7 +15,7 @@ wstoken <- "[workspace api key]:api_token" #enter your workspace token
 
 ##REQUEST USER DATA
 
-auth <- paste(login,":",password)
+auth <- paste(login,":",password,sep="")
 
 #get current user data - either method works
 #me = getURL("https://www.toggl.com/api/v8/me", userpwd=auth, httpauth=1L)
@@ -37,12 +37,12 @@ detail_url <- "https://toggl.com/reports/api/v2/details"
 summary_url <- "https://toggl.com/reports/api/v2/summary"
 
 #request parameters for weekly, detailed, and summary reports
-weekly_query <- paste("?user_agent=",login,"&workspace_id=",workspace,"&grouping:users",sep="")
+query <- paste("?user_agent=",login,"&workspace_id=",workspace,"&grouping:users",sep="")
 
 #user time data - need to use user api key rather than login
-time_week <- getURL(paste(weekly_url,weekly_query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
-time_detail <- getURL(paste(detail_url,weekly_query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
-time_summary <- getURL(paste(summary_url,weekly_query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
+time_week <- getURL(paste(weekly_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
+time_detail <- getURL(paste(detail_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
+time_summary <- getURL(paste(summary_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
 
 
 ##PARSE DATA
