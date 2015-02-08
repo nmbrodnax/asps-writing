@@ -1,16 +1,21 @@
+###This script accesses the Toggl API, obtains time entries for all workspace users, and creates 
+###dataframes for user and time entry data for use in reports
+###User login, user API token, and workspace API token are required for authentication
+
 library(RCurl) #for http requests
-library(RJSONIO) #for converting JSON-format to R
+library(RJSONIO) #for parsing JSON-formatted data
+source("def_msec_hrs.R") #to convert milliseconds to hrs, min, and sec
 
 ##AUTHENTICATION
 
 #login/key info for toggl
 login <- "[username]" #enter your username
 password <- "[password]" #enter your password
-workspace <- "[workspace id]" #enter your workspace id
+workspace <- "[workspace_id]" #enter your workspace id
 
 #api keys
-mytoken <- "[user api key]:api_token" #enter your user token
-wstoken <- "[workspace api key]:api_token" #enter your workspace token
+mytoken <- "[user_api_token]:api_token" #enter your user token
+wstoken <- "[workspace_api_token]:api_token" #enter your workspace token
 
 
 ##REQUEST USER DATA
@@ -53,21 +58,30 @@ user_details <- data.frame(matrix(unlist(userinfo), ncol=35, byrow=T))
 colnames(user_details) <- names(userinfo[[1]][1:35])
 
 #time entries - need to unlist into usable format
-weekly <- fromJSON(time_week)
-detail <- fromJSON(time_detail)
-summary <- fromJSON(time_summary)
-
-#projects created by users - not really needed for reports at this time
-proj_data <- fromJSON(projects) #this creates a nested list
-#can't put these into a matrix because the lists are of unequal lengths
-#use length(proj_data[[i]]) to count rows in list i
+detail <- fromJSON(time_detail) #user details are in list 6 of 6
 
 
-##CREATE REPORTS
+##CREATE DATAFRAME
 
-#user report
+#create table of time entries by user
+time_entries <- NULL
 
+for (i in 1:length(detail[[6]])) {
+  tid <- as.character(detail[[6]][[i]]["id"]) #time entry
+  pid <- as.character(detail[[6]][[i]]["pid"]) #project
+  uid <- as.character(detail[[6]][[i]]["uid"]) #user
+  dur <- as.numeric(detail[[6]][[i]]["dur"]) #duration
+  time <- msec.to.hrs(dur)
+  entry <- c(tid,pid,uid,time)
+  time_entries <- rbind(time_entries,entry,deparse.level=0)
+}
+colnames(time_entries) <- c("entry_id","proj_id","user_id","entry_hrs","entry_min","entry_sec")
+time_entries <- data.frame(time_entries)
+time_entries$entry_hrs <- as.numeric(time_entries$entry_hrs)
+time_entries$entry_min <- as.numeric(time_entries$entry_min)
+time_entries$entry_sec <- as.numeric(time_entries$entry_sec)
 
-#writing group report
+##SAVE DATA
 
-
+write.table(user_details,paste("user_details_",Sys.Date(),".dat",sep=""))
+write.table(time_entries,paste("time_entries_",Sys.Date(),".dat",sep=""))
