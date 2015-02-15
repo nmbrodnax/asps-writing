@@ -1,5 +1,5 @@
 ###This script accesses the Toggl API, obtains time entries for all workspace users, and creates 
-###dataframes for user and time entry data for use in reports
+###dataframes for user and time entry data for the last week for use in reports
 ###User login, user API token, and workspace API token are required for authentication
 
 library(RCurl) #for http requests
@@ -45,9 +45,9 @@ summary_url <- "https://toggl.com/reports/api/v2/summary"
 query <- paste("?user_agent=",login,"&workspace_id=",workspace,"&grouping:users",sep="")
 
 #user time data - need to use user api key rather than login
-time_week <- getURL(paste(weekly_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
+#time_week <- getURL(paste(weekly_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
 time_detail <- getURL(paste(detail_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
-time_summary <- getURL(paste(summary_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
+#time_summary <- getURL(paste(summary_url,query,sep=""), userpwd=mytoken, httpauth=1L, verbose=TRUE)
 
 
 ##PARSE DATA
