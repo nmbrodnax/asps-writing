@@ -1,7 +1,7 @@
 ##Association of SPEA PhD Students
 ###Academic Writing Group Reporting Project
 
-Documentation Last Modified: February 7, 2015
+Documentation Last Modified: February 15, 2015
 
 Members of the writing group are using multi-platform time-tracking tool [Toggl](http://www.toggl.com) to track writing time on weekdays.  
 
@@ -10,7 +10,8 @@ Using the [Toggl API](https://github.com/toggl/toggl_api_docs), I am in the proc
 All scripts are written using [R](http://www.r-project.org).
 
 **Status**
- * [togglapi.R](https://github.com/nmbrodnax/asps-writing/blob/master/togglapi.R) requests user and time-entry details from the Toggl website. A Toggl account and administrative access to a workspace are required.
+ * [togglapi.R](https://github.com/nmbrodnax/asps-writing/blob/master/togglapi.R) requests user and time-entry details from the Toggl website. A Toggl account and administrative access to a workspace are required. By default, requests return all time entries for one week prior to the date of query.
+ * [togglapi_all_time.R](https://github.com/nmbrodnax/asps-writing/blob/master/togglapi_all_time.R) requests time-entry details from a date specified by the user to the date of the query.
  * [togglreports.R](https://github.com/nmbrodnax/asps-writing/blob/master/togglreports.R) IN PROGRESS
  * Function Definitions
   * [def_fromISO.R](https://github.com/nmbrodnax/asps-writing/blob/master/def_fromISO.R) converts date/time in [ISO 8601](http://www.ietf.org/rfc/rfc3339.txt) format to a format readable by the [chron](http://cran.r-project.org/web/packages/chron/index.html) R package.
