@@ -6,6 +6,7 @@ library(RCurl) #for http requests
 library(RJSONIO) #for parsing JSON-formatted data
 source("def_msec_hrs.R") #to convert milliseconds to hrs, min, and sec
 
+
 ##AUTHENTICATION
 
 #login/key info for toggl
@@ -16,11 +17,10 @@ workspace <- "[workspace_id]" #enter your workspace id
 #api keys
 mytoken <- "[user_api_token]:api_token" #enter your user token
 wstoken <- "[workspace_api_token]:api_token" #enter your workspace token
+auth <- paste(login,":",password,sep="")
 
 
 ##REQUEST USER DATA
-
-auth <- paste(login,":",password,sep="")
 
 #get current user data - either method works
 #me = getURL("https://www.toggl.com/api/v8/me", userpwd=auth, httpauth=1L)
@@ -71,15 +71,21 @@ for (i in 1:length(detail[[6]])) {
   pid <- as.character(detail[[6]][[i]]["pid"]) #project
   uid <- as.character(detail[[6]][[i]]["uid"]) #user
   dur <- as.numeric(detail[[6]][[i]]["dur"]) #duration
+  start <- as.character(detail[[6]][[i]]["start"]) #start date/time
+  end <- as.character(detail[[6]][[i]]["end"]) #end date/time
   time <- msec.to.hrs(dur)
-  entry <- c(tid,pid,uid,time)
+  day <- weekdays(as.Date(strsplit(end,"T")[[1]][1]))
+  entry <- c(tid,pid,uid,start,end,day,time)
   time_entries <- rbind(time_entries,entry,deparse.level=0)
 }
-colnames(time_entries) <- c("entry_id","proj_id","user_id","entry_hrs","entry_min","entry_sec")
+colnames(time_entries) <- c("entry_id","proj_id","user_id","start","end","end_day","entry_hrs","entry_min","entry_sec")
 time_entries <- data.frame(time_entries)
 time_entries$entry_hrs <- as.numeric(time_entries$entry_hrs)
 time_entries$entry_min <- as.numeric(time_entries$entry_min)
 time_entries$entry_sec <- as.numeric(time_entries$entry_sec)
+time_entries$start <- as.character(time_entries$start)
+time_entries$end <- as.character(time_entries$end)
+
 
 ##SAVE DATA
 

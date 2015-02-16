@@ -5,17 +5,18 @@
 library(RCurl) #for http requests
 library(RJSONIO) #for parsing JSON-formatted data
 source("def_msec_hrs.R") #to convert milliseconds to hrs, min, and sec
+#source("def_fromISO.R") #converts from ISO 8601 to R-readable date format
 
 ##AUTHENTICATION
 
 #login/key info for toggl
 login <- "[username]" #enter your username
 password <- "[password]" #enter your password
-workspace <- "[workspace]" #enter your workspace id
+workspace <- "[workspace_id]" #enter your workspace id
 
 #api keys
-mytoken <- "[user_api_key]:api_token" #enter your user token
-wstoken <- "[workspace_api_key]:api_token" #enter your workspace token
+mytoken <- "[user_api_token]:api_token" #enter your user token
+wstoken <- "[workspace_api_token]:api_token" #enter your workspace token
 auth <- paste(login,":",password,sep="")
 
 
@@ -59,16 +60,21 @@ for (i in 1:pages) {
     pid <- as.character(detail[[6]][[i]]["pid"]) #project
     uid <- as.character(detail[[6]][[i]]["uid"]) #user
     dur <- as.numeric(detail[[6]][[i]]["dur"]) #duration
+    start <- as.character(detail[[6]][[i]]["start"]) #start date/time
+    end <- as.character(detail[[6]][[i]]["end"]) #end date/time
     time <- msec.to.hrs(dur)
-    entry <- c(tid,pid,uid,time)
+    day <- weekdays(as.Date(strsplit(end,"T")[[1]][1]))
+    entry <- c(tid,pid,uid,start,end,day,time)
     time_entries <- rbind(time_entries,entry,deparse.level=0)
   }
 }
-colnames(time_entries) <- c("entry_id","proj_id","user_id","entry_hrs","entry_min","entry_sec")
+colnames(time_entries) <- c("entry_id","proj_id","user_id","start","end","end_day","entry_hrs","entry_min","entry_sec")
 time_entries <- data.frame(time_entries)
 time_entries$entry_hrs <- as.numeric(time_entries$entry_hrs)
 time_entries$entry_min <- as.numeric(time_entries$entry_min)
 time_entries$entry_sec <- as.numeric(time_entries$entry_sec)
+time_entries$start <- as.character(time_entries$start)
+time_entries$end <- as.character(time_entries$end)
 
 stamp <- strsplit(from_date,"T")[[1]][1]
 write.table(time_entries,paste("time_entries_",stamp,"_to_",Sys.Date(),".dat",sep=""))
